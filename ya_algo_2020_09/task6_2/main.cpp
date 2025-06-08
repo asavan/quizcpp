@@ -168,8 +168,8 @@ int func(std::istream& f, std::ostream& out) {
     // ==== Process ====
     for (auto& col :cols) {
         std::unordered_set<Segment*> unclosed_next;
-        for (int point_idx = col.size() - 1; point_idx >= 0; --point_idx) {
-            int top_y = col[point_idx];
+        for (size_t point_idx = col.size(); point_idx > 0; ) {
+            int top_y = col[--point_idx];
             auto s = find_segment(top_y);
 
             // merge consequent points
