@@ -17,7 +17,9 @@ struct Stats {
 
 Stats solve_rec(size_t p, const std::vector<Node>& parents, int k);
 
-bool statsSorter(const Stats& l, const Stats& r) { return (l.manual - l.on) < (r.manual - r.on); }
+bool statsSorter(const Stats& l, const Stats& r) {
+    return (l.manual - l.on) < (r.manual - r.on);
+}
 
 std::vector<Stats> makeStats(size_t p, const std::vector<Node>& nodes, int k) {
     const Node& node = nodes[p];
