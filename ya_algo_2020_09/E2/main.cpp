@@ -1,91 +1,87 @@
 // https://contest.yandex.ru/contest/19811/problems/E/
 
 #include <iostream>
-#include <queue>
-#include <deque>
+#include <algorithm>
 #include <vector>
 #include <cassert>
 
 struct Node {
-    Node() : parent(0), k(0), visited(0), level(-1) {};
-    int parent;
-    int k;
-    int visited;
-    int level;
     std::vector<int> child;
 };
 
-std::priority_queue<std::pair<int, int>> setLevels(std::vector<Node>& parents) {
-    std::queue<int> q;
-    std::priority_queue<std::pair<int, int>> res;
-    res.push({ 0, parents.size()  - 1});
-    q.push(parents.size() - 1);
-    for (; !q.empty(); q.pop()) {
-        int ind = q.front();
-        Node& v = parents[ind];
-        for (int chind : v.child) {
-            Node& ch = parents[chind];
-            if (ch.level >= 0) {
-                continue;
-            }
-            ch.level = v.level + 1;
-            res.push({ ch.level, chind });
-            q.push(chind);
+struct Stats {
+    int manual;
+    int cascade;
+    int on;
+};
+
+void printStats(const Stats& s, int index) {
+    std::cerr << "index " << index << " manual " << s.manual << " cascade " << s.cascade << " on " << s.on << std::endl;
+}
+
+Stats solve_rec(int p, const std::vector<Node>& parents, int k) {
+    const Node& node = parents[p];
+    std::vector<Stats> sts;
+    sts.reserve(node.child.size());
+    for (int ch : node.child) {
+        sts.push_back(solve_rec(ch, parents, k));
+    }
+    int manual = 1;
+    int n = sts.size();
+    for (auto& s : sts) {
+        manual += s.manual;
+    }
+
+    if (k > n) {
+        auto res = Stats{.manual = manual, .cascade = manual, .on = manual - 1};
+        // printStats(res, p);
+        return res;
+    }
+
+    std::nth_element(sts.begin(), sts.end() - k + 1, sts.end(), [](const auto& l, const auto& r) {
+        return (l.manual - l.on) < (r.manual - r.on);
+    });
+
+    std::nth_element(sts.begin(), sts.end() - k, sts.end() - k + 1, [](const auto& l, const auto& r) {
+        return (l.manual - l.on) < (r.manual - r.on);
+        });
+
+    int on = 0;
+    for (int i = 0; i < n; ++i) {
+        if (i < n - k + 1) {
+            on += sts[i].on;
+        } else {
+            on += sts[i].manual;
         }
     }
+
+    int cascade = 0;
+    for (int i = 0; i < n; ++i) {
+        auto& s = sts[i];        
+        int candidatescore = 1 + on + s.cascade;
+        if (i < n - k + 1) {
+            candidatescore -= s.on;
+        }
+        else {
+            candidatescore -= s.manual;
+            candidatescore -= sts[n - k].on;
+            candidatescore += sts[n - k].manual;
+        }
+        if (cascade < candidatescore) {
+            cascade = candidatescore;
+        }
+
+    }
+    auto res = Stats{ .manual = manual, .cascade = cascade, .on = on };
+    // printStats(res, p);
     return res;
 }
 
-void debug_print(const std::deque<int>& t) {
-    std::cout << "debug_print ";
-    for (int el : t) {
-        std::cout << el << " ";
-    }
-    std::cout << std::endl;
+int solve(const std::vector<Node>& parents, int k) {
+    int rootIndex = parents.size() - 1;
+    auto s = solve_rec(rootIndex, parents, k);
+    return s.cascade - 1;
 }
-
-int solve(std::vector<Node> parents) {
-    std::priority_queue<std::pair<int, int>> q = setLevels(parents);
-    int res = 0;
-    for (; !q.empty(); q.pop()) {
-        auto [level, ind1] = q.top();
-        std::deque<int> temp;
-        temp.push_back(ind1);
-        while (!temp.empty()) {            
-            const int ind = temp.front();
-            temp.pop_front();
-            if (ind == parents.size() - 1) {
-                return res;
-            }
-            Node& v = parents[ind];
-            if (v.visited) {
-                continue;
-            }
-            v.visited = 1;
-            ++res;
-            for (int chInd : v.child) {
-                Node& ch = parents[chInd];
-                if (!ch.visited) {
-                    temp.push_back(chInd);
-                }
-            }
-            const int nextInd = v.parent;
-            assert(v.k >= 0);
-            assert(nextInd >= 0);
-            Node& next = parents[nextInd];
-            if (next.visited) {
-                continue;
-            }
-            --next.k;
-            if (next.k <= 0) {
-                temp.push_front(nextInd);
-            }            
-        }
-    }
-    assert(false);
-    return res;
-}
-
 
 int readInt() {
     int x;
@@ -99,14 +95,9 @@ int solveTest() {
     std::vector<Node> parents(n);
     for (int i = 0; i < n - 1; ++i) {
         int p = readInt() - 1;
-        parents[i].parent = p;
-        parents[i].k = k;
         parents[p].child.push_back(i);
     }
-    parents.back().parent = -1;
-    parents.back().k = k;
-    parents.back().level = 0;
-    return solve(std::move(parents));
+    return solve(parents, k);
 }
 
 int main() {
