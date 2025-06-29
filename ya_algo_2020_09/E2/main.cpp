@@ -15,9 +15,9 @@ struct Stats {
     int on;
 };
 
-Stats solve_rec(int p, const std::vector<Node> &parents, int k);
+Stats solve_rec(size_t p, const std::vector<Node> &parents, int k);
 
-std::vector<Stats> makeStats(int p, const std::vector<Node> &parents, int k) {
+std::vector<Stats> makeStats(size_t p, const std::vector<Node> &parents, int k) {
     const Node &node = parents[p];
     std::vector<Stats> sts;
     sts.reserve(node.child.size());
@@ -29,14 +29,13 @@ std::vector<Stats> makeStats(int p, const std::vector<Node> &parents, int k) {
 
 int calcManual(const std::vector<Stats> &sts) {
     int manual = 1;
-    int n = sts.size();
     for (const auto &s : sts) {
         manual += s.manual;
     }
     return manual;
 }
 
-int calcOn(const std::vector<Stats> &sts, int criticalIndex) {
+int calcOn(const std::vector<Stats> &sts, size_t criticalIndex) {
     int on = 0;
     for (size_t i = 0; i < sts.size(); ++i) {
         if (i < criticalIndex) {
@@ -48,11 +47,11 @@ int calcOn(const std::vector<Stats> &sts, int criticalIndex) {
     return on;
 }
 
-int calcCascade(const std::vector<Stats> &sts, int criticalIndex, int on) {
-    int prevCriticalIndex = criticalIndex - 1;
+int calcCascade(const std::vector<Stats> &sts, size_t criticalIndex, int on) {
+    size_t prevCriticalIndex = criticalIndex - 1;
     const Stats& subsCand = sts[prevCriticalIndex];
     int cascade = 0;
-    for (int i = 0; i < sts.size(); ++i) {
+    for (size_t i = 0; i < sts.size(); ++i) {
         const auto &s = sts[i];
         int candidatescore = 1 + on + s.cascade;
         if (i < criticalIndex) {
@@ -69,7 +68,7 @@ int calcCascade(const std::vector<Stats> &sts, int criticalIndex, int on) {
     return cascade;
 }
 
-Stats solve_rec(int p, const std::vector<Node> &parents, int k) {
+Stats solve_rec(size_t p, const std::vector<Node> &parents, int k) {
     std::vector<Stats> sts = makeStats(p, parents, k);
     int manual = calcManual(sts);
     if (sts.size() < k) {
@@ -90,14 +89,14 @@ Stats solve_rec(int p, const std::vector<Node> &parents, int k) {
                              return (l.manual - l.on) < (r.manual - r.on);
                          });
     */
-    int criticalIndex = sts.size() + 1 - k;
+    size_t criticalIndex = sts.size() + 1 - k;
     int on = calcOn(sts, criticalIndex);
     int cascade = calcCascade(sts, criticalIndex, on);
     return Stats{.manual = manual, .cascade = cascade, .on = on};
 }
 
 int solve(const std::vector<Node> &parents, int k) {
-    int rootIndex = parents.size() - 1;
+    size_t rootIndex = parents.size() - 1;
     auto s = solve_rec(rootIndex, parents, k);
     return s.cascade - 1;
 }
