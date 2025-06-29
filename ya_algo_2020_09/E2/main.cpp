@@ -24,7 +24,7 @@ Stats solve_rec(int p, const std::vector<Node> &parents, int k) {
     }
     int manual = 1;
     int n = sts.size();
-    for (auto &s : sts) {
+    for (const auto &s : sts) {
         manual += s.manual;
     }
 
@@ -55,7 +55,7 @@ Stats solve_rec(int p, const std::vector<Node> &parents, int k) {
 
     int cascade = 0;
     for (int i = 0; i < n; ++i) {
-        auto &s = sts[i];
+        const auto &s = sts[i];
         int candidatescore = 1 + on + s.cascade;
         if (i < n - k + 1) {
             candidatescore -= s.on;
@@ -73,7 +73,7 @@ Stats solve_rec(int p, const std::vector<Node> &parents, int k) {
 
 int solve(const std::vector<Node> &parents, int k) {
     int rootIndex = parents.size() - 1;
-    auto s = solve_rec(rootIndex, parents, k);
+    Stats s = solve_rec(rootIndex, parents, k);
     return s.cascade - 1;
 }
 
