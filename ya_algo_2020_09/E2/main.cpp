@@ -15,20 +15,64 @@ struct Stats {
     int on;
 };
 
-Stats solve_rec(int p, const std::vector<Node> &parents, int k) {
+Stats solve_rec(int p, const std::vector<Node> &parents, int k);
+
+std::vector<Stats> makeStats(int p, const std::vector<Node> &parents, int k) {
     const Node &node = parents[p];
     std::vector<Stats> sts;
     sts.reserve(node.child.size());
     for (int ch : node.child) {
         sts.push_back(solve_rec(ch, parents, k));
     }
+    return sts;
+}
+
+int calcManual(const std::vector<Stats> &sts) {
     int manual = 1;
     int n = sts.size();
     for (const auto &s : sts) {
         manual += s.manual;
     }
+    return manual;
+}
 
-    if (k > n) {
+int calcOn(const std::vector<Stats> &sts, int criticalIndex) {
+    int on = 0;
+    for (size_t i = 0; i < sts.size(); ++i) {
+        if (i < criticalIndex) {
+            on += sts[i].on;
+        } else {
+            on += sts[i].manual;
+        }
+    }
+    return on;
+}
+
+int calcCascade(const std::vector<Stats> &sts, int criticalIndex, int on) {
+    int prevCriticalIndex = criticalIndex - 1;
+    const Stats& subsCand = sts[prevCriticalIndex];
+    int cascade = 0;
+    for (int i = 0; i < sts.size(); ++i) {
+        const auto &s = sts[i];
+        int candidatescore = 1 + on + s.cascade;
+        if (i < criticalIndex) {
+            candidatescore -= s.on;
+        } else {
+            candidatescore -= s.manual;
+            candidatescore -= subsCand.on;
+            candidatescore += subsCand.manual;
+        }
+        if (cascade < candidatescore) {
+            cascade = candidatescore;
+        }
+    }
+    return cascade;
+}
+
+Stats solve_rec(int p, const std::vector<Node> &parents, int k) {
+    std::vector<Stats> sts = makeStats(p, parents, k);
+    int manual = calcManual(sts);
+    if (sts.size() < k) {
         return Stats{.manual = manual, .cascade = manual, .on = manual - 1};
     }
 
@@ -36,44 +80,25 @@ Stats solve_rec(int p, const std::vector<Node> &parents, int k) {
         return (l.manual - l.on) < (r.manual - r.on);
     });
     /*
-    std::nth_element(sts.begin(), sts.end() - k + 1, sts.end(), [](const auto&
-    l, const auto& r) { return (l.manual - l.on) < (r.manual - r.on);
-    });
+        std::nth_element(sts.begin(), sts.end() - k + 1, sts.end(),
+                         [](const auto &l, const auto &r) {
+                             return (l.manual - l.on) < (r.manual - r.on);
+                         });
 
-    std::nth_element(sts.begin(), sts.end() - k, sts.end() - k + 1, [](const
-    auto& l, const auto& r) { return (l.manual - l.on) < (r.manual - r.on);
-        });
+        std::nth_element(sts.begin(), sts.end() - k, sts.end() - k + 1,
+                         [](const auto &l, const auto &r) {
+                             return (l.manual - l.on) < (r.manual - r.on);
+                         });
     */
-    int on = 0;
-    for (int i = 0; i < n; ++i) {
-        if (i < n - k + 1) {
-            on += sts[i].on;
-        } else {
-            on += sts[i].manual;
-        }
-    }
-
-    int cascade = 0;
-    for (int i = 0; i < n; ++i) {
-        const auto &s = sts[i];
-        int candidatescore = 1 + on + s.cascade;
-        if (i < n - k + 1) {
-            candidatescore -= s.on;
-        } else {
-            candidatescore -= s.manual;
-            candidatescore -= sts[n - k].on;
-            candidatescore += sts[n - k].manual;
-        }
-        if (cascade < candidatescore) {
-            cascade = candidatescore;
-        }
-    }
+    int criticalIndex = sts.size() + 1 - k;
+    int on = calcOn(sts, criticalIndex);
+    int cascade = calcCascade(sts, criticalIndex, on);
     return Stats{.manual = manual, .cascade = cascade, .on = on};
 }
 
 int solve(const std::vector<Node> &parents, int k) {
     int rootIndex = parents.size() - 1;
-    Stats s = solve_rec(rootIndex, parents, k);
+    auto s = solve_rec(rootIndex, parents, k);
     return s.cascade - 1;
 }
 
