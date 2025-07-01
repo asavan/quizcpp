@@ -1,5 +1,7 @@
 // https://contest.yandex.ru/contest/19811/problems/F/
 
+// draw in https://www.pixilart.com/draw?ref=home-page
+
 #include <algorithm>
 #include <cassert>
 #include <iostream>
@@ -30,11 +32,11 @@ int solve(int n, int m) {
         if (m == 3) {
             return 2;
         }
-        if (m == 6) {
-            return 4;
-        }
         if (m == 5) {
             return 3;
+        }
+        if (m == 6) {
+            return 4;
         }
         return solve(n, m - 2) + 1;
     }
@@ -72,11 +74,28 @@ int solve(int n, int m) {
         if (m == 5) {
             return 7;
         }
+        if (m == 6) {
+            return 9;
+        }
+        if (m == 7) {
+            return 10;
+        }
+        if (m == 8) {
+            return 5+6;
+        }
+        return solve(n, m - 4) + 5;
     }
     if (n == 6) {
         if (m == 6) {
             return 10;
         }
+        if (m == 7) {
+            return 5+6;
+        }
+        if (m == 8) {
+            // return 3*4 + 1;
+        }
+        return solve(n, m-2) + 3;
     }
     if (n == 7) {
         if (m == 7) {
@@ -85,6 +104,13 @@ int solve(int n, int m) {
         if (m == 8) {
             return 7 * 2;
         }
+        if (m == 9) {
+            return 7 * 2 + 3;
+        }
+        if (m == 10) {
+            return 7 * 2 + 4;
+        }
+        return solve(n, m-4) + 7;
     }
     int res = n * m;
     return res;
@@ -135,6 +161,7 @@ void test3() {
 void test4() {
     assert(solve(4, 4) == 4);
     assert(solve(4, 5) == 6);
+    assert(solve(4, 6) == 7);
     assert(solve(4, 7) == 7);
     assert(solve(4, 8) == 8);
     assert(solve(4, 9) == 10);
@@ -143,18 +170,35 @@ void test4() {
 
 void test5() {
     assert(solve(5, 5) == 7);
+    assert(solve(5, 6) == 9);
+    assert(solve(5, 7) == 10);
+    assert(solve(5, 8) == 11);
 }
 
-int main() {
+void test6() {
+    assert(solve(6, 6) == 10);
+    assert(solve(6, 7) == 11);
+    assert(solve(6, 8) == 13);
+}
+
+void test7() {
+    assert(solve(7, 7) == 12);
+    assert(solve(7, 8) == 14);
+    assert(solve(7, 12) == 7*3);
+}
+
+int mainTest() {
     test1();
     test2();
     test3();
     test4();
     test5();
+    test6();
+    test7();
     return 0;
 }
 
-int main1() {
+int main() {
     int n = readInt();
     int m = readInt();
     std::cout << solve(n, m) << std::endl;
