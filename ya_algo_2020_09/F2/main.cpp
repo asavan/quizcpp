@@ -178,10 +178,10 @@ int solve3(int n, int m) {
             return 7 * 2;
         }
         if (m == 9) {
-            return 7 * 2 + 3;
+            return 16;
         }
         if (m == 10) {
-            return 7 * 2 + 4;
+            return 17;
         }
         return solve(n, m-4) + 7;
     }
@@ -264,7 +264,17 @@ void test7() {
     assert(solve(7, 12) == 7*3);
 }
 
-int main1() {
+void stressTest(int n) {
+    for (int m = 1; m < 100; ++m) {
+        int res1 = solve(n, m);
+        int res2 = solve3(n, m);
+        if (res1 != res2) {
+            std::cerr << m << " " << res1 << " " << res2 << std::endl;            
+        }
+    }
+}
+
+int main() {
     test1();
     test2();
     test3();
@@ -272,10 +282,11 @@ int main1() {
     test5();
     test6();
     test7();
+    stressTest(7);
     return 0;
 }
 
-int main() {
+int main1() {
     int n = readInt();
     int m = readInt();
     std::cout << solve(n, m) << std::endl;

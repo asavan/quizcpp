@@ -122,7 +122,7 @@ def solve(n, m):
                     if check_column(n, mask_last, mask_penultimate, None):
                         min_liars = min(min_liars, dp[last_col_idx][mask_last][mask_penultimate])
 
-    # print(min_liars if min_liars != INF else "Решение не найдено")
+    print(min_liars if min_liars != INF else "Решение не найдено")
     return min_liars if min_liars != INF else m*n
 
 # Чтобы запустить код, раскомментируйте строку ниже и введите n и m
@@ -222,5 +222,5 @@ def fillArray() :
 
 
 # testAll()
-# solve(7, 100)
-fillArray()
+solve(5, 7)
+# fillArray()
