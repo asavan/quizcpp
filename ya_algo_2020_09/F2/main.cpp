@@ -33,7 +33,7 @@ int solve(int n, int m) {
             return 2;
         }
         if (m == 5) {
-            return 3;
+            // return 3;
         }
         if (m == 6) {
             return 4;
@@ -93,9 +93,15 @@ int solve(int n, int m) {
             return 5+6;
         }
         if (m == 8) {
-            // return 3*4 + 1;
+            return 3*4 + 1;
         }
-        return solve(n, m-2) + 3;
+        if (m == 9) {
+            return 14;
+        }
+        if (m == 10) {
+            return 16;
+        }
+        return solve(n, m-5) + 8;
     }
     if (n == 7) {
         if (m == 7) {
@@ -154,6 +160,8 @@ void test3() {
     assert(solve(3, 5) == 4);
     assert(solve(3, 6) == 6);
     assert(solve(3, 7) == 6);
+    assert(solve(3, 9) == 7);
+    assert(solve(3, 10) == 9);
     assert(solve(3, 15) == 12);
     assert(solve(3, 16) == 13);
 }
@@ -179,6 +187,8 @@ void test6() {
     assert(solve(6, 6) == 10);
     assert(solve(6, 7) == 11);
     assert(solve(6, 8) == 13);
+    assert(solve(6, 9) == 14);
+    assert(solve(6, 10) == 16);
 }
 
 void test7() {
@@ -187,7 +197,7 @@ void test7() {
     assert(solve(7, 12) == 7*3);
 }
 
-int mainTest() {
+int main1() {
     test1();
     test2();
     test3();
