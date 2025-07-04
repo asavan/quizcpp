@@ -163,7 +163,19 @@ int solve3(int n, int m) {
         if (m == 10) {
             return 16;
         }
-        return solve(n, m - 4) + 6;
+        if (m == 11) {
+            return 17;
+        }
+        if (m == 12) {
+            return 18;
+        }
+        if (m == 13) {
+            return 20;
+        }
+        if (m == 14) {
+            return 22;
+        }
+        return solve(n, m - 7) + 10;
     }
     if (n == 7) {
         if (m == 7) {
@@ -285,7 +297,7 @@ int main() {
     stressTest(3);
     stressTest(4);
     stressTest(5);
-    // stressTest(6);
+    stressTest(6);
     stressTest(7);
     return 0;
 }
