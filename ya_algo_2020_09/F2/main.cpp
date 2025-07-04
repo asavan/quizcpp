@@ -120,7 +120,13 @@ int solve3(int n, int m) {
         if (m == 7) {
             return 7;
         }
-        return solve(n, m - 4) + 4;
+        if (m == 8) {
+            return 8;
+        }
+        if (m == 9) {
+            return 10;
+        }
+        return m;
     }
 
     if (n == 5) {
@@ -128,7 +134,7 @@ int solve3(int n, int m) {
             return 7;
         }
         if (m == 6) {
-            return 9;
+            return 8;
         }
         if (m == 7) {
             return 10;
@@ -136,7 +142,10 @@ int solve3(int n, int m) {
         if (m == 8) {
             return 5 + 6;
         }
-        return solve(n, m - 4) + 5;
+        if (m == 9) {
+            return 12;
+        }
+        return solve(n, m - 5) + 6;
     }
     if (n == 6) {
         if (m == 6) {
@@ -226,14 +235,16 @@ void test4() {
     assert(solve(4, 7) == 7);
     assert(solve(4, 8) == 8);
     assert(solve(4, 9) == 10);
-    // assert(solve(4, 10) == 11);
+    assert(solve(4, 10) == 10);
 }
 
 void test5() {
     assert(solve(5, 5) == 7);
-    // assert(solve(5, 6) == 9);
+    assert(solve(5, 6) == 8);
     assert(solve(5, 7) == 10);
     assert(solve(5, 8) == 11);
+    assert(solve(5, 14) == 18);
+    assert(solve(5, 15) == 19);
 }
 
 void test6() {
@@ -273,8 +284,8 @@ int main() {
     stressTest(1);
     stressTest(2);
     stressTest(3);
-    // stressTest(4);
-    // stressTest(5);
+    stressTest(4);
+    stressTest(5);
     return 0;
 }
 
