@@ -1,7 +1,3 @@
-
-
-Parent::[[olympiads and contests]]
-
 # F. Процессоры-лжецы
 
 |   |   |
