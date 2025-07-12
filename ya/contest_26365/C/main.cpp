@@ -17,7 +17,7 @@ std::vector<int> readVec(int n) {
 }
 
 void print(const std::vector<double>& result) {
-    for (int x : result) {
+    for (auto x : result) {
         std::cout << x << " ";
     }
     std::cout << std::endl;
