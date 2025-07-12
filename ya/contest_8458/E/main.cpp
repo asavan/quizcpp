@@ -1,7 +1,5 @@
-#include <algorithm> // For std::equal
 #include <array>
 #include <iostream>
-#include <iterator> // For std::begin, std::end
 #include <string>
 
 std::string readStr() {
