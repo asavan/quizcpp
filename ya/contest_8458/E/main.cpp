@@ -11,7 +11,7 @@ std::string readStr() {
 }
 
 std::array<int, 26> calcHash(const std::string& s) {
-    std::array<int, 26> array;
+    std::array<int, 26> array{};
     for (char c : s) {
         ++array[c - 'a'];
     }
