@@ -1,5 +1,6 @@
 // problems/E/
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -7,6 +8,15 @@
 #include <stdexcept>
 #include <queue>
 #include <memory>
+
+template< class T, class Alloc, class Pred >
+constexpr typename std::vector<T, Alloc>::size_type
+erase_iff(std::vector<T, Alloc>& c, Pred pred) {
+    auto it = std::remove_if(c.begin(), c.end(), pred);
+    auto r = c.end() - it;
+    c.erase(it, c.end());
+    return r;
+}
 
 class Clusters {
 public:
@@ -22,46 +32,41 @@ public:
             }
         }
     }
-    
+
     bool sameClusters(int x, int y) const {
         auto it = map.find(x);
         if (it == map.end()) {
-            // std::cerr << "NOT IN MAP" << std::endl;
             return false;
         }
         auto it2 = it->second->find(y);
         if (it2 == it->second->end()) {
-            // std::cerr << "DIFF CLUSTERS" << std::endl;
             return false;
         }
-        // std::cerr << "SAME CLUSTER" << std::endl;
         return true;
     }
 private:
-            std::shared_ptr<std::unordered_set<int>> cluster(
-                const std::unordered_map<int, std::unordered_set<int>>& graph, int root) {
-            auto visited = std::make_shared<std::unordered_set<int>>();
-            std::queue<int> queue;
-            queue.push(root);
-            visited->insert(root);
-            while (!queue.empty()) {
-                int x = queue.front();
-                queue.pop();
-                auto it = graph.find(x);
-                if (it == graph.end()) {
-                    // std::cerr << "WHATT" << std::endl;
-                    continue;
-                }
-                for (int y : it->second) {
-                    if (visited->find(y) == visited->end()) {
-                        queue.push(y);
-                        visited->insert(y);
-                    }
+    std::shared_ptr<std::unordered_set<int>> cluster(
+        const std::unordered_map<int, std::unordered_set<int>>& graph, int root) {
+        auto visited = std::make_shared<std::unordered_set<int>>();
+        std::queue<int> queue;
+        queue.push(root);
+        visited->insert(root);
+        while (!queue.empty()) {
+            int x = queue.front();
+            queue.pop();
+            auto it = graph.find(x);
+            if (it == graph.end()) {
+                continue;
+            }
+            for (int y : it->second) {
+                if (visited->find(y) == visited->end()) {
+                    queue.push(y);
+                    visited->insert(y);
                 }
             }
-            // std::cerr << "size " << visited->size() << std::endl;
-            return visited;
         }
+        return visited;
+    }
     std::unordered_map<int, std::shared_ptr<std::unordered_set<int>>> map;
 };
 
@@ -102,13 +107,8 @@ std::vector<int> request(const Clusters& c) {
     int x = readInt();
     int k = readInt();
     auto req = readVec(k);
-    std::vector<int> res;
-    for (int r: req) {
-        if (c.sameClusters(x, r)) {
-            res.push_back(r);
-        }
-    }
-    return res;
+    erase_iff(req, [&c, x](int r) { return !c.sameClusters(x, r); });
+    return req;
 }
 
 void solve() {
