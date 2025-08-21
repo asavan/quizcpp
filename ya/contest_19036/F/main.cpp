@@ -1,41 +1,57 @@
-// problems/D/
-
+#include <curl/curl.h>  
+#include "json.hpp"
 #include <iostream>
+#include <algorithm>
+#include <string>
 #include <vector>
-#include <stdexcept>
+#include <numeric>
 
-
-int readInt() {
-    int x;
-    std::cin >> x;
-    return x;
-}
-
-void print(int res) {
-    std::cout << "! " << res << std::endl;
-}
-
-void bisect() {
-    int n = readInt();
-    int lb = 1;
-    int ub = n;
-    while (ub != lb) {
-        int curr = (lb + ub) / 2;
-        std::cout << curr << std::endl;
-        int res = readInt();
-        if (res == 1) {
-            lb = curr + 1;
-        } else if (res == 0) {
-            ub = curr;
-        } else {
-            throw std::runtime_error("bad responce");
+class Scraper {
+public:
+    Scraper() {
+        curl = curl_easy_init();
+        if (!curl) {
+            throw std::runtime_error("curl error");
         }
-
     }
-    print(ub);
-}
+    ~Scraper() {
+        curl_easy_cleanup(curl);
+        curl = NULL;
+    }
+    std::string request(const std::string& url) {
+        std::string response_string;
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeFunction);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
+        curl_easy_perform(curl);
+        return response_string;
+    }
 
-int main() {
-    bisect();
+private:
+    static size_t writeFunction(void* ptr, size_t size, size_t nmemb, std::string* data) {
+        data->append((char*)ptr, size * nmemb);
+        return size * nmemb;
+    }
+    CURL* curl;
+};
+
+int main(int argc, char** argv) {
+    Scraper s;
+    std::string url;
+    int port, a, b;
+    std::cin >> url;
+    std::cin >> port;
+    std::cin >> a;
+    std::cin >> b;
+
+    std::string request = url + ":" + std::to_string(port) + "?a=" + std::to_string(a) + "&b=" + std::to_string(b);
+    std::string response_string = s.request(request);
+    auto resp_json = nlohmann::json::parse(response_string);
+    std::vector<int32_t> res;
+    for (const auto& o : resp_json) {
+        res.push_back(o.get<int32_t>());
+    }
+    long long result = std::accumulate(res.begin(), res.end(), 0L);
+    std::cout << result << std::endl;
     return 0;
 }
