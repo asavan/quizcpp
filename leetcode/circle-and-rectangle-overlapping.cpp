@@ -1,6 +1,5 @@
-#include <iostream>
-
-using namespace std;
+#include <cmath>
+#include <algorithm>
 
 class Solution {
     int sqr(int x) {
@@ -16,11 +15,10 @@ public:
         auto cornerX = abs(x1-x2);
         auto cornerY = abs(y2 - y1);
 
-        auto closestX = min(cornerX, xCenterNew);
-        auto closestY = min(cornerY, yCenterNew);
+        auto closestX = std::min(cornerX, xCenterNew);
+        auto closestY = std::min(cornerY, yCenterNew);
 
         auto dist = sqr(closestX - xCenterNew) + sqr(closestY - yCenterNew);
-        cout << xCenterNew << " " << yCenterNew << " " << dist << endl;
         return dist <= sqr(2*radius);
     }
 };
