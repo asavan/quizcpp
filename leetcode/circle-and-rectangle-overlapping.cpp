@@ -8,8 +8,8 @@ class Solution {
 
   public:
     bool checkOverlap(int radius, int xCenter, int yCenter, int x1, int y1, int x2, int y2) {
-        auto xNew = (x1 + x2);
-        auto yNew = (y1 + y2);
+        auto xNew = x1 + x2;
+        auto yNew = y1 + y2;
         auto xCenterNew = abs(2 * xCenter - xNew);
         auto yCenterNew = abs(2 * yCenter - yNew);
 
