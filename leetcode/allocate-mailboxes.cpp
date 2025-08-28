@@ -16,7 +16,7 @@ class Solution {
         auto f = std::vector<std::vector<int>>(n, std::vector<int>(k + 1, inf));
         for (int i = 0; i < n; ++i) {
             f[i][1] = g[0][i];
-            for (int j = 2; j <= k && j <= i + 1; ++j) {
+            for (int j = 2; j < std::min(k + 1, i + 2); ++j) {
                 for (int p = 0; p < i; ++p) {
                     f[i][j] = std::min(f[i][j], f[p][j - 1] + g[p + 1][i]);
                 }
